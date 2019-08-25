@@ -1,5 +1,4 @@
 import scrapy as scrapy
-from loginform import fill_login_form
 
 from constants import *
 
@@ -17,20 +16,28 @@ class DVWASpider(scrapy.Spider):
         yield scrapy.Request(DVWA_BASE_URL + DVWA_LOGIN_PAGE, callback=self.login)
 
     def login(self, response):
-        self.log("Attempting login to DVWA")
+        self.logger.info("Attempting login to DVWA")
         try:
-            data, url, method = fill_login_form(response.url,
-                                                response.body,
-                                                DVWA_LOGIN_USERNAME,
-                                                DVWA_LOGIN_PASSWORD)
-            yield scrapy.FormRequest(url,
-                                     formdata=dict(data),
-                                     method=method,
-                                     callback=self.post_login)
+            yield scrapy.FormRequest.from_response(response,
+                                                   formdata={'username': DVWA_LOGIN_USERNAME,
+                                                             'password': DVWA_LOGIN_PASSWORD},
+                                                   callback=self.post_login)
 
         except Exception:
-            return self.log("Login Failed")
+            return self.logger.error("Login Failed")
 
-    def post_login(self):
-        pass
+    def post_login(self, response):
 
+        if self.login_user in response.text:
+            self.logger.info("Successfully logged into DVWA Web App")
+            yield scrapy.Request(url=DVWA_BASE_URL + DVWA_VULNERABILITY_POINT,
+                                 callback=self.vulnerability_scan,
+                                 cookies={DVWA_SECURITY_KEY: DVWA_SECURITY_VALUE})
+
+        else:
+            return self.logger.error("Failed to log in.. Retry with correct credentials")
+
+    def vulnerability_scan(self, response):
+        count = 0
+
+    
