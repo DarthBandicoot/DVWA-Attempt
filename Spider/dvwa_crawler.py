@@ -1,6 +1,6 @@
 import scrapy as scrapy
 
-from constants import *
+from Spider.constants import *
 
 
 class DVWASpider(scrapy.Spider):
@@ -40,4 +40,6 @@ class DVWASpider(scrapy.Spider):
     def vulnerability_scan(self, response):
         count = 0
 
-    
+        for sql_char in self.sqli_characters:
+            return ''
+
