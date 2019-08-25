@@ -2,7 +2,7 @@ import pymongo
 from scrapy.exceptions import DropItem
 from scrapy.utils import log
 
-from Spider.settings import *
+from webcrawler.settings import *
 __author__ = "lewis"
 
 

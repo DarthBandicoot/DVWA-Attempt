@@ -1,6 +1,6 @@
 import scrapy as scrapy
 
-from Spider.constants import *
+from webcrawler.constants import *
 
 
 class DVWASpider(scrapy.Spider):
@@ -41,5 +41,12 @@ class DVWASpider(scrapy.Spider):
         count = 0
 
         for sql_char in self.sqli_characters:
-            return ''
+            yield scrapy.FormRequest.from_response(
+                response,
+                formdata={'id': sql_char,
+                          'Submit': 'Submit'},
+                cookies={DVWA_SECURITY_KEY: DVWA_SECURITY_VALUE}
+            )
+            
+
 
